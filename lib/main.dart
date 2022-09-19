@@ -5,6 +5,8 @@ import 'package:velocity_x/velocity_x.dart';
 import 'package:weather_app/consts/colors.dart';
 import 'package:weather_app/consts/images.dart';
 import 'package:weather_app/consts/strings.dart';
+import 'package:weather_app/controllers/main_controller.dart';
+import 'package:weather_app/utils/our_themes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,20 +19,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      darkTheme: CustomThemes.darkTheme,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+      theme: CustomThemes.lightTheme,
+      themeMode: ThemeMode.system,
       home: WeatherApp(),
     );
   }
@@ -39,25 +32,31 @@ class MyApp extends StatelessWidget {
 class WeatherApp extends StatelessWidget {
   WeatherApp({Key? key}) : super(key: key);
   var date = DateFormat("yMMMMd").format(DateTime.now());
+  var controller = Get.put(MainController());
+
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: date.text.gray700.make(),
+        title: date.text.color(theme.primaryColor).make(),
         actions: [
+          Obx(() => IconButton(
+              onPressed: () {
+                controller.changeTheme();
+              },
+              icon: Icon(
+                controller.isDark.value ? Icons.light_mode : Icons.dark_mode,
+                color: theme.iconTheme.color,
+              ))),
           IconButton(
               onPressed: () {},
-              icon: const Icon(
-                Icons.light_mode,
-                color: Vx.gray700,
-              )),
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
+              icon: Icon(
                 Icons.more_vert,
-                color: Vx.gray700,
+                color: theme.iconTheme.color,
               )),
         ],
       ),
@@ -66,22 +65,22 @@ class WeatherApp extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            "Lahore".text.size(34).black.bold.make(),
+            "Lahore".text.color(theme.primaryColor).size(34).bold.make(),
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Image.asset("assets/weather/01d.png"),
               RichText(
-                  text: const TextSpan(children: [
+                  text: TextSpan(children: [
                 TextSpan(
                     text: "37$degree",
                     style: TextStyle(
-                      color: Vx.gray700,
+                      color: theme.primaryColor,
                       fontSize: 64,
                       fontFamily: "poppins",
                     )),
                 TextSpan(
                     text: "sunny",
                     style: TextStyle(
-                      color: Vx.gray700,
+                      color: theme.primaryColor,
                       fontSize: 14,
                       fontFamily: "poppins",
                     )),
@@ -92,19 +91,19 @@ class WeatherApp extends StatelessWidget {
               children: [
                 TextButton.icon(
                   onPressed: null,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.expand_less_rounded,
-                    color: Vx.gray400,
+                    color: theme.iconTheme.color,
                   ),
-                  label: "41$degree".text.make(),
+                  label: "41$degree".text.color(theme.primaryColor).make(),
                 ),
                 TextButton.icon(
                   onPressed: null,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.expand_less_rounded,
-                    color: Vx.gray400,
+                    color: theme.iconTheme.color,
                   ),
-                  label: "46$degree".text.make(),
+                  label: "46$degree".text.color(theme.primaryColor).make(),
                 )
               ],
             ),
@@ -163,7 +162,12 @@ class WeatherApp extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                "Next 7 days".text.semiBold.size(16).make(),
+                "Next 7 days"
+                    .text
+                    .color(theme.primaryColor)
+                    .semiBold
+                    .size(16)
+                    .make(),
                 TextButton(onPressed: () {}, child: "View All".text.make()),
               ],
             ),
@@ -175,34 +179,40 @@ class WeatherApp extends StatelessWidget {
                 var day = DateFormat("EEEE")
                     .format(DateTime.now().add(Duration(days: index + 1)));
                 return Card(
+                  color: theme.cardColor,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8.0, vertical: 12),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: day.text.make()),
+                        Expanded(
+                            child: day.text.color(theme.primaryColor).make()),
                         Expanded(
                           child: TextButton.icon(
                               onPressed: null,
                               icon: Image.asset("assets/weather/50n.png",
                                   width: 40),
-                              label: "26$degree".text.size(16).make()),
+                              label: "26$degree"
+                                  .text
+                                  .color(theme.primaryColor)
+                                  .size(16)
+                                  .make()),
                         ),
                         RichText(
-                          text: const TextSpan(
+                          text: TextSpan(
                             children: [
                               TextSpan(
                                   text: "37$degree /",
                                   style: TextStyle(
-                                    color: Vx.gray800,
+                                    color: theme.primaryColor,
                                     fontFamily: "poppins",
                                     fontSize: 16,
                                   )),
                               TextSpan(
                                   text: " 26$degree",
                                   style: TextStyle(
-                                    color: Vx.gray600,
+                                    color: theme.primaryColor,
                                     fontFamily: "poppins",
                                     fontSize: 16,
                                   )),
